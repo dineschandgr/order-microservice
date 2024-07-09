@@ -1,6 +1,7 @@
-package io.microservices.demo.Product.model;
+package io.microservices.demo.Cart.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,31 +15,36 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name="products")
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class Product {
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Builder
+@Table(name = "cartItems")
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Integer id;
-
-    private  String product_Name;
-    private  String description;
-    private  double price;
-    private double gstPercentage;
+    private Integer id;
 
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name="category_id",nullable = false)
-    private Category category;
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "cart_id",nullable = false)
+    private Cart cart;
+
+    private Integer productId;
 
     @Transient
-    private Integer tempCategoryId;
+    private Integer tempProductId;
 
-    private Long userId;
+    private Integer quantity;
+
+    private double gstAmount;
+
+    private double productPrice;
+
+    private double itemTotal;
+
+
 
 }

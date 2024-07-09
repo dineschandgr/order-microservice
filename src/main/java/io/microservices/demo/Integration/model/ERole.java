@@ -1,4 +1,4 @@
-package io.microservices.demo.Product.Integration.model;
+package io.microservices.demo.Integration.model;
 
 public enum ERole {
 
