@@ -5,6 +5,9 @@ import io.microservices.demo.Cart.model.Cart;
 import io.microservices.demo.Cart.model.CartDTO;
 import io.microservices.demo.Cart.model.CartItem;
 import io.microservices.demo.Configuration.UserContext;
+import io.microservices.demo.Integration.service.CommonService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,11 +24,14 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/cart")
 public class CartController {
 
-   @Autowired
+    @Autowired
     private CartService cartService;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(CartController.class);
 
     @PostMapping
     public String addToCart(@RequestBody CartDTO cartDTO) throws Exception {
+        LOGGER.info("inside addToCart {} ",cartDTO);
         try {
             cartService.addToCart(cartDTO);
         } catch (Exception e) {

@@ -12,6 +12,8 @@ import io.microservices.demo.Integration.service.CommonService;
 import io.microservices.demo.Order.Service.OrderService;
 import io.microservices.demo.Order.model.Order;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +35,18 @@ public class CartService {
     @Autowired
     private OrderService orderService;
 
+    private final Logger LOGGER = LoggerFactory.getLogger(CommonService.class);
     @Transactional
     public void addToCart(CartDTO cartDTO) throws Exception {
 
         Long userId = UserContext.getUserId();
 
+        LOGGER.info(" inside addToCart {} ",userId);
+
         User user = commonService.findUserById(userId);
+
+        if(user == null)
+            throw new Exception("User Not Found");
 
         Cart cart = cartRepository.findByUserId(userId).orElse(new Cart());
 
