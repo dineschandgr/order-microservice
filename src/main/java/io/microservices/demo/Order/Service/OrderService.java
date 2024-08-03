@@ -1,12 +1,17 @@
 package io.microservices.demo.Order.Service;
 
+import io.microservices.demo.Cart.Repository.CartRepository;
+import io.microservices.demo.Cart.Service.CartService;
 import io.microservices.demo.Cart.model.Cart;
 import io.microservices.demo.Cart.model.CartItem;
+import io.microservices.demo.Order.Controller.OrderController;
 import io.microservices.demo.Order.Repository.OrderItemRepository;
 import io.microservices.demo.Order.Repository.OrderRepository;
 import io.microservices.demo.Order.model.EOrderStatus;
 import io.microservices.demo.Order.model.Order;
 import io.microservices.demo.Order.model.OrderItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +27,11 @@ public class OrderService {
 
     @Autowired
     OrderItemRepository orderItemRepository;
+
+    @Autowired
+    CartRepository cartRepository;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
 
     public Order createOrder(Cart cart) {
         Order order = Order.builder().orderStatus(EOrderStatus.PENDING).orderTotal(cart.getTotalPrice())
@@ -64,8 +74,31 @@ public class OrderService {
 
     }
 
-    public void completeOrder(Order order){
+    public Order getOrderById(Integer id) throws Exception {
+        Optional<Order> order = orderRepository.findById(id);
+        return order.orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    public void completeOrder(Integer orderId) throws Exception {
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        LOGGER.info("inside completeOrder {} ",order);
         order.setOrderStatus(EOrderStatus.COMPLETED);
+        orderRepository.save(order);
+        cartRepository.deleteByUserId(order.getUserId());
+        //cartService.deleteCart(order.getUserId());
+
+        //delete cart
+
+    }
+
+    public void cancelOrder(Integer orderId) {
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        LOGGER.info("inside completeOrder {} ",order);
+        order.setOrderStatus(EOrderStatus.CANCELLED);
         orderRepository.save(order);
     }
 }

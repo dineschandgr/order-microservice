@@ -28,7 +28,8 @@ public class UserContextFilter extends OncePerRequestFilter {
 
       String userId = request.getHeader("userId");
 
-      UserContext.setUserId(Long.valueOf(userId));
+      if(userId != null)
+          UserContext.setUserId(Long.valueOf(userId));
 
       filterChain.doFilter(request, response);
     }
